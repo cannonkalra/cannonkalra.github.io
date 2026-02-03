@@ -82,6 +82,15 @@ export const SITE_CONTENT: SiteContent = {
         "Re-architected backend services supporting 3,000+ connected IoT devices, reducing latency and improving release velocity by 30%. Built firmware delivery and telemetry tracking pipelines to enable predictive diagnostics and faster maintenance cycles.",
       ],
     },
+    {
+      company: "Unnova Systems",
+      position: "Founding Member",
+      startDate: "Aug 2015",
+      endDate: "Sep 2017",
+      summary: [
+        "Built early IoT hardware prototypes and embedded telemetry systems, combining automation with real-world feedback for consumer devices. Contributed across hardware, firmware, and data pipelines during the company’s formative stages.",
+      ],
+    },
   ],
   projects: [
     {
