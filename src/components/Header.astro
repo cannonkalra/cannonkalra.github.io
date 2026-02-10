@@ -84,7 +84,7 @@ const { siteLogo, navLinks } = Astro.props;
         }
       });
     },
-    { threshold: 0.5 },
+    { rootMargin: "-40% 0px -50% 0px", threshold: 0 },
   );
 
   document.querySelectorAll("section").forEach((section) => {
