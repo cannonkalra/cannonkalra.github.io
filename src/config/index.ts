@@ -1,7 +1,7 @@
 import type { SiteConfig, SiteContent } from "../types";
 
 export const SITE_CONFIG: SiteConfig = {
-  title: "Cannon Kalra — Mobile & Web Developer",
+  title: "Cannon Kalra — Platform & Data Engineer",
   author: "Cannon Kalra",
   description:
     "Platform engineer based in Bangalore, India. I work on data engineering systems that power analytics, experimentation, and real-time decision-making.",
