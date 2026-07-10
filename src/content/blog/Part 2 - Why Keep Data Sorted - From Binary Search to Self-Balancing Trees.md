@@ -1,9 +1,9 @@
 ---
 title: "Why Keep Data Sorted: From Binary Search to Self-Balancing Trees"
 description: "Why range queries force us to maintain sorted order, and how that requirement produces linked lists, BSTs, and self-balancing trees."
-date:
+date: 2026-07-05
 tags: [data-structures, algorithms, binary-search, range-queries, bst, avl-tree, red-black-tree]
-draft: true
+draft: false
 series: why-every-data-structure-exists
 part: 2
 ---

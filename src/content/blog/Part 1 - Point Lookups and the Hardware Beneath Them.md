@@ -1,9 +1,9 @@
 ---
 title: "Point Lookups: Hash Maps and the Hardware Beneath Them"
 description: "What a key-value lookup is, why hash maps answer it in O(1), and why the same operation behaves completely differently in memory and on disk."
-date:
+date: 2026-07-03
 tags: [data-structures, hash-maps, associative-arrays, memory, storage, hardware]
-draft: true
+draft: false
 series: why-every-data-structure-exists
 part: 1
 ---
