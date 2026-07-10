@@ -15,6 +15,12 @@ export const SITE = {
   locale: "en_US",
   /** Posts shown per page on the blog index. */
   postsPerPage: 8,
+  /**
+   * GoatCounter site code — the subdomain of your goatcounter.com account
+   * (https://<code>.goatcounter.com). Set to "" to disable analytics.
+   * Only loads in production builds; dev traffic is never counted.
+   */
+  goatcounterCode: "cannon",
 } as const;
 
 export const NAV_LINKS: { label: string; href: string }[] = [

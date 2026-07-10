@@ -1,0 +1,18 @@
+---
+import { SITE } from "@/config";
+
+/**
+ * GoatCounter analytics — privacy-friendly, cookieless, ~3.5 KB.
+ * Loads ONLY in production builds (so local dev traffic isn't counted) and
+ * only when a site code is configured. No consent banner needed.
+ */
+const code = SITE.goatcounterCode;
+const enabled = import.meta.env.PROD && Boolean(code);
+const endpoint = `https://${code}.goatcounter.com/count`;
+---
+
+{
+  enabled && (
+    <script is:inline async data-goatcounter={endpoint} src="//gc.zgo.at/count.js" />
+  )
+}

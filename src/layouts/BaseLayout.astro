@@ -5,6 +5,7 @@ import ThemeScript from "@/components/ThemeScript.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Search from "@/components/Search.astro";
+import Analytics from "@/components/Analytics.astro";
 
 /** Props are forwarded verbatim to <BaseHead> for SEO. */
 interface Props {
@@ -51,5 +52,6 @@ const { wide = false, ...head } = Astro.props;
 
     <Footer />
     <Search />
+    <Analytics />
   </body>
 </html>
