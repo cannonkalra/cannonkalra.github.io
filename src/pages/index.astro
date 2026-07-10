@@ -1,17 +1,79 @@
 ---
-import { SITE_CONTENT } from "@/config";
-import Hero from "@/components/Hero.astro";
-import Layout from "@/layouts/Layout.astro";
-import Experience from "@/components/Experience.astro";
-import Projects from "@/components/Projects.astro";
-import About from "@/components/About.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostCard from "@/components/PostCard.astro";
+import Icon from "@/components/Icon.astro";
+import { SOCIAL_LINKS } from "@/config";
+import { getPosts, getFeaturedPosts } from "@/lib/posts";
 
-import "@/styles/global.css";
+const featured = await getFeaturedPosts();
+const recent = await getPosts();
+const lead = featured[0] ?? recent[0];
+const rest = (featured.length ? featured.slice(1) : recent.slice(1, 5)).slice(
+  0,
+  4,
+);
 ---
 
-<Layout>
-  <Hero {...SITE_CONTENT.hero} />
-  <Experience experience={SITE_CONTENT.experience} />
-  <!-- <Projects projects={SITE_CONTENT.projects} /> -->
-  <About {...SITE_CONTENT.about} name={SITE_CONTENT.hero.name} />
-</Layout>
+<BaseLayout>
+  <!-- Intro — quiet, typographic, no hero imagery -->
+  <section class="pt-16 sm:pt-24">
+    <h1 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">
+      Cannon Kalra
+    </h1>
+    <p class="mt-4 text-lg leading-relaxed text-muted">
+      I'm a platform engineer who builds large-scale data systems — lakehouses,
+      streaming pipelines, and the infrastructure that keeps them reliable. This
+      is where I write about the craft: distributed systems, data platforms, and
+      the decisions behind them.
+    </p>
+    <div class="mt-6 flex flex-wrap items-center gap-1">
+      {
+        SOCIAL_LINKS.map((s) => (
+          <a
+            href={s.href}
+            aria-label={s.label}
+            rel={s.href.startsWith("http") ? "me noopener" : undefined}
+            target={s.href.startsWith("http") ? "_blank" : undefined}
+            class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+          >
+            <Icon name={s.icon as any} size={19} />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Writing -->
+  {
+    lead && (
+      <section class="mt-16 sm:mt-20">
+        <div class="flex items-baseline justify-between">
+          <h2 class="font-sans text-sm font-semibold uppercase tracking-wider text-faint">
+            {featured.length ? "Featured writing" : "Latest writing"}
+          </h2>
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-1 font-sans text-sm text-muted transition-colors hover:text-text"
+          >
+            All posts <Icon name="arrowRight" size={14} />
+          </a>
+        </div>
+
+        <div class="mt-4">
+          <PostCard post={lead} featured />
+          {rest.map((p) => (
+            <PostCard post={p} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    !lead && (
+      <p class="mt-16 text-muted">
+        No posts yet — the first essay is on its way.
+      </p>
+    )
+  }
+</BaseLayout>

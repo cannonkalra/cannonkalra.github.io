@@ -1,0 +1,34 @@
+---
+import { formatDate, isoDate } from "@/lib/format";
+import Icon from "./Icon.astro";
+
+interface Props {
+  date: Date;
+  updated?: Date;
+  minutes: number;
+  class?: string;
+}
+const { date, updated, minutes, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-sm text-muted",
+    className,
+  ]}
+>
+  <time datetime={isoDate(date)}>{formatDate(date)}</time>
+  <span aria-hidden="true" class="text-faint">·</span>
+  <span class="inline-flex items-center gap-1.5">
+    <Icon name="clock" size={14} />
+    {minutes} min read
+  </span>
+  {
+    updated && (
+      <>
+        <span aria-hidden="true" class="text-faint">·</span>
+        <span>Updated {formatDate(updated)}</span>
+      </>
+    )
+  }
+</div>

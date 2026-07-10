@@ -1,0 +1,27 @@
+---
+import Icon from "./Icon.astro";
+/**
+ * Light/dark toggle. Persists to localStorage and updates <html> instantly.
+ * The button is pre-rendered; a tiny inline script wires the click.
+ */
+---
+<button
+  id="theme-toggle"
+  type="button"
+  class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+  aria-label="Toggle color theme"
+  title="Toggle theme"
+>
+  <span class="hidden dark:block"><Icon name="sun" size={18} /></span>
+  <span class="block dark:hidden"><Icon name="moon" size={18} /></span>
+</button>
+
+<script>
+  const btn = document.getElementById("theme-toggle");
+  btn?.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    const theme = isDark ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+    document.documentElement.style.colorScheme = theme;
+  });
+</script>

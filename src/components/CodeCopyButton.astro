@@ -1,0 +1,44 @@
+---
+/**
+ * Progressive enhancement: wraps every Shiki <pre> in a positioned container
+ * and injects a copy-to-clipboard button. Runs once on load; no button ships
+ * in the HTML, so there is zero cost without JS (the code is still readable).
+ */
+---
+<script>
+  function enhance() {
+    const blocks = document.querySelectorAll<HTMLPreElement>(
+      "article pre.astro-code:not([data-enhanced])",
+    );
+    blocks.forEach((pre) => {
+      pre.dataset.enhanced = "true";
+      const wrapper = document.createElement("div");
+      wrapper.className = "code-wrapper";
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.setAttribute("aria-label", "Copy code");
+      btn.textContent = "Copy";
+
+      btn.addEventListener("click", async () => {
+        const code = pre.querySelector("code")?.innerText ?? "";
+        try {
+          await navigator.clipboard.writeText(code);
+          btn.textContent = "Copied";
+          btn.dataset.copied = "true";
+          setTimeout(() => {
+            btn.textContent = "Copy";
+            delete btn.dataset.copied;
+          }, 1600);
+        } catch {
+          btn.textContent = "Failed";
+        }
+      });
+      wrapper.appendChild(btn);
+    });
+  }
+  enhance();
+</script>

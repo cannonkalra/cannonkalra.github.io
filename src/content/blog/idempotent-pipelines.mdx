@@ -1,0 +1,82 @@
+---
+title: "Idempotency Is a Design Constraint, Not a Retry Policy"
+description: "Treating idempotency as something you add later is how you end up with duplicate rows. Here's how to bake it into the pipeline from the first commit."
+date: 2026-07-08
+tags: ["data-platforms", "streaming", "reliability"]
+series: Data Platforms in Practice
+part: 3
+author: cannon
+---
+
+import Callout from "@/components/Callout.astro";
+
+Ask an engineer what makes a pipeline idempotent and you'll usually hear
+"we retry safely." That's the *symptom* of idempotency, not the design. Real
+idempotency is a property you decide on at schema-design time and then defend at
+every write.
+
+## A working definition
+
+A pipeline stage is idempotent if processing the same input twice produces the
+same state as processing it once. Formally, for a state transition $f$ and input
+$x$:
+
+$$
+f(f(s, x), x) = f(s, x)
+$$
+
+The moment this fails, retries — which are inevitable in any distributed system —
+become a source of corruption rather than resilience.
+
+<Callout type="tip" title="The one-line test">
+  If you can't replay yesterday's data through your pipeline and get byte-identical
+  output, you are not idempotent. You're lucky.
+</Callout>
+
+## The deterministic key
+
+Everything hinges on a key that is a pure function of the input, never of wall
+clock or processing order:
+
+```sql
+-- Bad: depends on when the row was processed
+INSERT INTO events VALUES (uuid(), payload, now());
+
+-- Good: key is derived entirely from the source
+MERGE INTO events t
+USING staged s
+ON t.event_id = s.source_topic || ':' || s.partition || ':' || s.offset
+WHEN NOT MATCHED THEN INSERT *;
+```
+
+The `topic:partition:offset` triple uniquely identifies a Kafka record for all
+time. Derive your primary key from it and a replay simply re-matches existing
+rows instead of duplicating them.
+
+## Idempotency across boundaries
+
+The hard cases live at system seams:
+
+1. **Source → stage.** Use source-native offsets, as above.
+2. **Stage → sink.** Prefer `MERGE`/upsert over `INSERT`. Make the sink the
+   enforcer of uniqueness.
+3. **Side effects.** Emails, webhooks, and payments can't be un-sent. Wrap them
+   in an outbox table that is itself idempotent, and let a separate, at-least-once
+   dispatcher own delivery.
+
+<Callout type="danger" title="The trap">
+  Idempotent storage plus non-idempotent side effects equals a system that is
+  *mostly* correct — which is the most dangerous kind, because it passes every
+  demo and fails in production at 3 a.m.
+</Callout>
+
+## Why it's worth the discipline
+
+Idempotency is what lets you treat retries, backfills, and disaster recovery as
+the *same operation*. You stop writing special-case recovery code because the
+normal path already handles replays. The pipeline gets smaller and more correct
+at the same time — the rare case where the disciplined choice is also the lazy
+one.
+
+That's the whole series in a sentence: **design the seams, and the system takes
+care of itself.**

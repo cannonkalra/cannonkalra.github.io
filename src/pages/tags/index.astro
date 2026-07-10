@@ -1,0 +1,25 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
+import { getTags } from "@/lib/posts";
+
+const tags = await getTags();
+---
+
+<BaseLayout
+  title="Tags"
+  description="Browse writing by topic — data platforms, distributed systems, and more."
+>
+  <header class="pt-14">
+    <h1 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">
+      Tags
+    </h1>
+    <p class="mt-3 text-lg text-muted">Browse writing by topic.</p>
+  </header>
+
+  <div class="mt-8 flex flex-wrap gap-2.5">
+    {tags.map(({ tag, count }) => <Tag tag={tag} count={count} />)}
+  </div>
+
+  {tags.length === 0 && <p class="mt-8 text-muted">No tags yet.</p>}
+</BaseLayout>

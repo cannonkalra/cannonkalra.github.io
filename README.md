@@ -1,46 +1,82 @@
-# Astro Starter Kit: Basics
+# cannonkalra.github.io
 
-```sh
-yarn create astro@latest -- --template basics
+A calm, minimal, editorial technical blog — built for **beautiful reading first**.
+Static, fast, and authored in Obsidian.
+
+> Typography > Effects · Whitespace > Decoration · Content > UI · Speed > Features · Simplicity > Cleverness
+
+## Stack
+
+| Concern            | Choice                                                            |
+| ------------------ | ---------------------------------------------------------------- |
+| Framework          | [Astro 5](https://astro.build) (static output, near-zero JS)     |
+| Styling            | Tailwind CSS 4 (via `@tailwindcss/vite`) + a token design system |
+| Content            | Markdown / MDX content collections                               |
+| Types              | TypeScript (strict)                                              |
+| Search             | [Pagefind](https://pagefind.app) (static, post-build index)      |
+| Syntax highlight   | Shiki (dual Vitesse light/dark themes)                           |
+| Math               | remark-math + KaTeX                                              |
+| Diagrams           | Mermaid (lazy client island — only loads on pages that use it)   |
+| OG images          | `astro-og-canvas` (generated at build)                           |
+| Fonts              | Inter · Newsreader · JetBrains Mono (self-hosted, variable)      |
+
+No React. No client framework. Interactive bits (theme toggle, search, copy
+buttons, reading progress, scroll-spy TOC, mermaid) are small vanilla scripts,
+loaded only where needed.
+
+## Quickstart
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:4321  (drafts are visible in dev)
+pnpm build        # astro build + pagefind index → ./dist
+pnpm preview      # serve the production build locally
+pnpm check        # astro check (types + template diagnostics)
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Writing a post (Obsidian workflow)
 
-## 🚀 Project Structure
+1. Copy [`templates/blog-post.md`](templates/blog-post.md) into
+   `src/content/blog/` (a subfolder is fine — the URL slug is derived from the
+   **filename**, so `Part 1 - Point Lookups.md` → `/blog/part-1-point-lookups`).
+2. Fill in the frontmatter (see [CONTRIBUTING.md](CONTRIBUTING.md) for the full
+   field reference). Keep it flat — it maps 1:1 onto Obsidian's properties panel.
+3. Write. A top-level `# Title` is optional and auto-stripped (the title comes
+   from frontmatter). `##`/`###` build the table of contents.
+4. `draft: true` hides a post from production (still visible in `pnpm dev`).
 
-Inside of your Astro project, you'll see the following folders and files:
+Everything an Obsidian author expects works out of the box: fenced code,
+` ```mermaid ` diagrams, `$math$`, footnotes, tables, and images.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+## Project structure
+
+```
+src/
+  components/      Small, single-purpose Astro components
+  layouts/         BaseLayout (shell) · PostLayout (article)
+  pages/           Routes (home, blog, tags, series, about, projects, rss, og…)
+  content/
+    blog/          Posts (.md / .mdx). blog/drafts/ for work-in-progress
+    authors/       Author profiles (JSON)
+  lib/             Data helpers (posts, toc, slug, format) + remark plugins
+  styles/          global.css — the design token system + prose styles
+  config.ts        Site metadata, nav, socials
+templates/         Obsidian post template
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Documentation
 
-## 🧞 Commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — how it's built and why
+- [DESIGN.md](DESIGN.md) — the design system + research behind it
+- [WIREFRAMES.md](WIREFRAMES.md) — every page's layout
+- [CONTRIBUTING.md](CONTRIBUTING.md) — authoring & frontmatter reference
 
-All commands are run from the root of the project, from a terminal:
+## Deploy
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
-| `yarn dev`             | Starts local dev server at `localhost:4321`      |
-| `yarn build`           | Build your production site to `./dist/`          |
-| `yarn preview`         | Preview your build locally, before deploying     |
-| `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro -- --help` | Get help using the Astro CLI                     |
+Published to GitHub Pages via `.github/workflows/deploy.yml` on a `v*.*.*` tag
+(or manual dispatch). The workflow runs `pnpm build`, which builds the site
+**and** the Pagefind search index, then publishes `./dist`.
 
-## 👀 Want to learn more?
+## License
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Content © Cannon Kalra. Code is provided as-is.

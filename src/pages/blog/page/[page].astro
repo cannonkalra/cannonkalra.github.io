@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlogIndex from "@/components/BlogIndex.astro";
+import { SITE } from "@/config";
+import { getPosts, type Post } from "@/lib/posts";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getPosts();
+  // Page 1 lives at /blog; generate /blog/page/2, /blog/page/3, …
+  return paginate(posts, { pageSize: SITE.postsPerPage }).filter(
+    (p) => p.params.page !== "1",
+  );
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Post>;
+}
+const { page } = Astro.props;
+const prev = page.currentPage === 2 ? "/blog" : page.url.prev;
+---
+
+<BaseLayout
+  title={`Writing — Page ${page.currentPage}`}
+  description={SITE.description}
+>
+  <BlogIndex
+    posts={page.data}
+    currentPage={page.currentPage}
+    lastPage={page.lastPage}
+    urlPrev={prev}
+    urlNext={page.url.next}
+  />
+</BaseLayout>

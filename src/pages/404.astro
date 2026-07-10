@@ -1,0 +1,30 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Icon from "@/components/Icon.astro";
+---
+
+<BaseLayout title="Not found" noindex>
+  <section
+    class="flex min-h-[60vh] flex-col items-center justify-center text-center"
+  >
+    <p class="font-mono text-6xl font-bold tracking-tight text-accent">404</p>
+    <h1 class="mt-4 text-2xl font-semibold text-text">Page not found</h1>
+    <p class="mt-2 max-w-sm text-muted">
+      The page you're looking for doesn't exist or may have moved.
+    </p>
+    <div class="mt-6 flex gap-3">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 font-sans text-sm font-medium text-white transition-opacity hover:opacity-90"
+      >
+        <Icon name="arrowLeft" size={15} /> Home
+      </a>
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 font-sans text-sm text-muted transition-colors hover:text-text"
+      >
+        Browse writing
+      </a>
+    </div>
+  </section>
+</BaseLayout>

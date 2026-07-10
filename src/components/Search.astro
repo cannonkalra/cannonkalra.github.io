@@ -1,0 +1,96 @@
+---
+/**
+ * Static full-text search via Pagefind. The index is generated post-build
+ * (see package.json `build` script) and lives in /pagefind. The UI bundle
+ * loads lazily the first time the dialog opens — nothing ships until then.
+ * Opens on the header button or the `/` key; closes on Escape / backdrop.
+ */
+---
+<dialog
+  id="search-dialog"
+  class="m-0 mx-auto mt-[8vh] w-[min(38rem,92vw)] rounded-xl border border-border bg-surface p-0 text-text shadow-lg backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  aria-label="Search articles"
+>
+  <div class="p-4">
+    <div id="search-ui"></div>
+    <p
+      id="search-empty"
+      class="hidden px-1 py-8 text-center text-sm text-muted"
+    >
+      Search is available on the deployed site.
+    </p>
+  </div>
+</dialog>
+
+<style is:global>
+  /* Theme the Pagefind UI with our design tokens */
+  #search-ui {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--bg-subtle);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: var(--radius);
+    --pagefind-ui-font: var(--font-sans);
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById("search-dialog") as HTMLDialogElement;
+  const openBtn = document.getElementById("search-open");
+  let initialized = false;
+
+  async function ensureUI() {
+    if (initialized) return;
+    initialized = true;
+    // Load Pagefind's stylesheet (generated post-build) on demand.
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "/pagefind/pagefind-ui.css";
+    document.head.appendChild(css);
+    try {
+      // Path is a variable + @vite-ignore so the bundler leaves it alone —
+      // the file only exists after `pagefind` runs against dist/.
+      const src = "/pagefind/pagefind-ui.js";
+      const { PagefindUI } = await import(/* @vite-ignore */ src);
+      new PagefindUI({
+        element: "#search-ui",
+        showSubResults: true,
+        showImages: false,
+        resetStyles: false,
+      });
+    } catch {
+      document.getElementById("search-empty")?.classList.remove("hidden");
+    }
+  }
+
+  function open() {
+    ensureUI();
+    dialog?.showModal();
+    setTimeout(
+      () => dialog?.querySelector<HTMLInputElement>("input")?.focus(),
+      50,
+    );
+  }
+
+  openBtn?.addEventListener("click", open);
+
+  // `/` opens search when not typing in a field
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "/" &&
+      !dialog?.open &&
+      !/^(INPUT|TEXTAREA)$/.test((e.target as HTMLElement)?.tagName)
+    ) {
+      e.preventDefault();
+      open();
+    }
+  });
+
+  // Click on backdrop closes
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>

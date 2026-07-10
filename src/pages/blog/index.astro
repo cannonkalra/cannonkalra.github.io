@@ -1,0 +1,20 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlogIndex from "@/components/BlogIndex.astro";
+import { SITE } from "@/config";
+import { getPosts } from "@/lib/posts";
+
+const posts = await getPosts();
+const perPage = SITE.postsPerPage;
+const lastPage = Math.max(1, Math.ceil(posts.length / perPage));
+const pagePosts = posts.slice(0, perPage);
+---
+
+<BaseLayout title="Writing" description={SITE.description}>
+  <BlogIndex
+    posts={pagePosts}
+    currentPage={1}
+    lastPage={lastPage}
+    urlNext={lastPage > 1 ? "/blog/page/2" : undefined}
+  />
+</BaseLayout>

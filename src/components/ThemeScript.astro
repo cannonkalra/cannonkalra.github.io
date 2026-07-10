@@ -1,0 +1,20 @@
+---
+/**
+ * Runs before first paint (is:inline, un-bundled) to set the theme class
+ * with zero flash-of-incorrect-theme. Reads a stored preference, else falls
+ * back to the OS setting.
+ */
+---
+<script is:inline>
+  (() => {
+    const stored = localStorage.getItem("theme");
+    const theme =
+      stored === "light" || stored === "dark"
+        ? stored
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+  })();
+</script>

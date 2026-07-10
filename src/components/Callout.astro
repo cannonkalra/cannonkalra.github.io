@@ -1,0 +1,51 @@
+---
+import Icon from "./Icon.astro";
+
+/**
+ * Admonition block for MDX: import and wrap prose.
+ * <Callout type="warning" title="Careful">…</Callout>
+ */
+type Kind = "note" | "tip" | "warning" | "danger";
+interface Props {
+  type?: Kind;
+  title?: string;
+}
+const { type = "note", title } = Astro.props;
+
+const CONFIG: Record<Kind, { icon: any; label: string; color: string }> = {
+  note: { icon: "hash", label: "Note", color: "var(--note)" },
+  tip: { icon: "check", label: "Tip", color: "var(--tip)" },
+  warning: { icon: "clock", label: "Warning", color: "var(--warn)" },
+  danger: { icon: "close", label: "Danger", color: "var(--danger)" },
+};
+const c = CONFIG[type];
+---
+
+<aside
+  class="callout my-6 rounded-lg border border-border bg-bg-subtle p-4 pl-5"
+  style={`border-left: 3px solid ${c.color};`}
+  role="note"
+>
+  <p
+    class="mb-1 flex items-center gap-2 font-sans text-sm font-semibold"
+    style={`color: ${c.color};`}
+  >
+    <Icon name={c.icon} size={16} />
+    {title ?? c.label}
+  </p>
+  <div class="callout-body text-[0.95em] text-text">
+    <slot />
+  </div>
+</aside>
+
+<style is:global>
+  .callout-body > :first-child {
+    margin-top: 0;
+  }
+  .callout-body > :last-child {
+    margin-bottom: 0;
+  }
+  .callout-body p {
+    margin-block: 0.5em;
+  }
+</style>

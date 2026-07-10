@@ -1,111 +1,108 @@
 ---
-import Menu from "@/icons/Menu.astro";
-import { Image } from "astro:assets";
-import type { HeaderProps } from "@/types";
+import { NAV_LINKS } from "@/config";
+import Icon from "./Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 
-type Props = HeaderProps;
-
-const { siteLogo, navLinks } = Astro.props;
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
 ---
 
 <header
-  class="sticky top-0 z-50 mx-auto flex max-w-5xl animate-slide-in justify-between bg-black px-5 py-6"
+  class="sticky top-0 z-40 border-b border-border/70 bg-bg/80 backdrop-blur-md"
+  data-pagefind-ignore
 >
-  <a href="/" aria-label="Home link">
-    <Image
-      class="rounded-full"
-      src={siteLogo}
-      width="45"
-      height="45"
-      alt="website logo"
-    />
-  </a>
-
-  <button
-    type="button"
-    id="menu-button"
-    class="px-1.5 text-neutral sm:hidden"
-    aria-expanded="false"
-    aria-controls="main-menu"
-  >
-    <Menu />
-  </button>
-
   <nav
-    class="absolute top-20 right-5 hidden rounded-xl border border-neutral/40 bg-black px-4 py-5 text-neutral sm:static sm:block sm:border-0 sm:bg-transparent sm:p-0"
-    id="main-menu"
+    class="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5"
+    aria-label="Primary"
   >
-    <ul class="gap-2 sm:flex">
+    <a
+      href="/"
+      class="font-mono text-sm font-medium tracking-tight text-text transition-opacity hover:opacity-70"
+    >
+      cannon<span class="text-accent">.</span>kalra
+    </a>
+
+    <div class="flex items-center gap-1">
+      <ul class="mr-1 hidden items-center gap-1 sm:flex">
+        {
+          NAV_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
+                class:list={[
+                  "rounded-md px-3 py-2 text-sm transition-colors hover:text-text",
+                  isActive(link.href) ? "text-text" : "text-muted",
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <button
+        id="search-open"
+        type="button"
+        class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+        aria-label="Search"
+        title="Search (press /)"
+      >
+        <Icon name="search" size={18} />
+      </button>
+
+      <ThemeToggle />
+
+      <button
+        id="menu-open"
+        type="button"
+        class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text sm:hidden"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <Icon name="menu" size={20} />
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    hidden
+    class="border-t border-border bg-bg px-5 py-3 sm:hidden"
+  >
+    <ul class="flex flex-col gap-1">
       {
-        navLinks.map((link) => (
-          <li class="relative">
+        NAV_LINKS.map((link) => (
+          <li>
             <a
-              class={`nav-item relative block p-2 text-sm font-medium transition-all duration-500 after:absolute after:bottom-0 after:left-2/4 after:h-2 after:w-1 after:-translate-x-2/4 after:text-primary after:opacity-0 after:content-['•'] hover:text-white`}
               href={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              class:list={[
+                "block rounded-md px-3 py-2.5 text-base transition-colors hover:bg-bg-subtle",
+                isActive(link.href) ? "text-text" : "text-muted",
+              ]}
             >
-              {link.text}
+              {link.label}
             </a>
           </li>
         ))
       }
     </ul>
-  </nav>
+  </div>
 </header>
 
 <script>
-  // Toggle mobile menu
-  const button = document.querySelector("#menu-button");
-  const menu = document.querySelector("#main-menu");
-  const navItems = document.querySelectorAll("#main-menu > ul > li > a");
-
-  const toggleMenu = () => {
-    menu?.classList.toggle("hidden");
-    const isHidden = menu?.classList.contains("hidden");
-    button?.setAttribute("aria-expanded", `${!isHidden}`);
-  };
-
-  button?.addEventListener("click", toggleMenu);
-  navItems.forEach((item) => {
-    item?.addEventListener("click", toggleMenu);
+  // Mobile menu toggle
+  const menuBtn = document.getElementById("menu-open");
+  const menu = document.getElementById("mobile-menu");
+  menuBtn?.addEventListener("click", () => {
+    const open = menu?.hasAttribute("hidden");
+    if (open) menu?.removeAttribute("hidden");
+    else menu?.setAttribute("hidden", "");
+    menuBtn.setAttribute("aria-expanded", String(open));
   });
-
-  // Update navigation based on scroll position with Intersection Observer
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          navItems.forEach((item) => {
-            if (item.getAttribute("href") === `#${entry.target.id}`) {
-              item.classList.add("text-white", "md:after:opacity-100");
-            } else {
-              item.classList.remove("text-white", "md:after:opacity-100");
-            }
-          });
-        }
-      });
-    },
-    { rootMargin: "-40% 0px -50% 0px", threshold: 0 },
-  );
-
-  document.querySelectorAll("section").forEach((section) => {
-    observer.observe(section);
-  });
-
-  // Cleanup observer
-  document.onvisibilitychange = () => {
-    if (document.visibilityState === "hidden") {
-      observer.disconnect();
-    } else {
-      document.querySelectorAll("section").forEach((section) => {
-        observer.observe(section);
-      });
-    }
-  };
 </script>
-
-<style>
-  header {
-    animation-timeline: scroll();
-    animation-range: 0 650px;
-  }
-</style>

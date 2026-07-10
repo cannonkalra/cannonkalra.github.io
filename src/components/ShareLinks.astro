@@ -1,0 +1,61 @@
+---
+import { SITE } from "@/config";
+import Icon from "./Icon.astro";
+
+interface Props {
+  title: string;
+  path: string;
+}
+const { title, path } = Astro.props;
+const url = new URL(path, SITE.url).href;
+
+const twitter = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  title,
+)}&url=${encodeURIComponent(url)}`;
+const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+  url,
+)}`;
+---
+
+<div class="flex items-center gap-2">
+  <span class="font-sans text-sm text-muted">Share</span>
+  <a
+    href={twitter}
+    target="_blank"
+    rel="noopener"
+    aria-label="Share on Twitter"
+    class="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+  >
+    <Icon name="twitter" size={15} />
+  </a>
+  <a
+    href={linkedin}
+    target="_blank"
+    rel="noopener"
+    aria-label="Share on LinkedIn"
+    class="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+  >
+    <Icon name="linkedin" size={15} />
+  </a>
+  <button
+    type="button"
+    data-copy-link={url}
+    aria-label="Copy link"
+    class="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+  >
+    <Icon name="link" size={15} />
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-link]").forEach(
+    (btn) => {
+      btn.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(btn.dataset.copyLink!);
+        const original = btn.innerHTML;
+        btn.textContent = "✓";
+        setTimeout(() => (btn.innerHTML = original), 1200);
+      });
+    },
+  );
+</script>

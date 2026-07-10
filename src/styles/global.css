@@ -1,53 +1,515 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
-  --font-serif: "Gabarito Variable", ui-serif, serif;
+/* Self-hosted variable fonts — zero external requests */
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/newsreader/index.css";
+@import "@fontsource-variable/newsreader/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
 
-  --color-primary: #2563eb;
-  --color-neutral: #94a3b8;
-  --color-white: #e2e8f0;
-  --color-black: #0e141b;
+/* Math typesetting */
+@import "katex/dist/katex.min.css";
 
-  --text-xs: 0.875rem;
-  --text-xs--line-height: 1.125rem;
-  --text-sm: 1rem;
-  --text-sm--line-height: 1.25rem;
-  --text-base: 1.125rem;
-  --text-base--line-height: 1.625rem;
-  --text-lg: 1.25rem;
-  --text-lg--line-height: 1.75rem;
-  --text-xl: 1.5rem;
-  --text-xl--line-height: 1.813rem;
-  --text-2xl: 1.75rem;
-  --text-2xl--line-height: 2.125rem;
-  --text-3xl: 2rem;
-  --text-3xl--line-height: 2.375rem;
-  --text-4xl: 2.25rem;
-  --text-4xl--line-height: 2.688rem;
-  --text-5xl: 2.5rem;
-  --text-5xl--line-height: 3rem;
-  --text-6xl: 3rem;
-  --text-6xl--line-height: 3.625rem;
-  --text-7xl: 3.75rem;
-  --text-7xl--line-height: 1;
-  --text-8xl: 4.5rem;
-  --text-8xl--line-height: 4.875rem;
-  --text-9xl: 6rem;
-  --text-9xl--line-height: 6.625rem;
+/* Class-based dark mode: toggled by adding `.dark` to <html> */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --tracking-tightest: -2px;
-  --tracking-tighter: -1px;
-  --tracking-tight: -0.25px;
+/* ------------------------------------------------------------------ *
+ * DESIGN TOKENS
+ * Semantic colour tokens live on :root / .dark so the theme can swap
+ * at runtime. Everything else (type scale, spacing, radius) is static.
+ * A warm-neutral ink palette — never pure #000 / #fff.
+ * ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
 
-  --animate-slide-in: slide-in 600ms ease both;
+  /* Surfaces */
+  --bg: #fbfaf8; /* warm paper white */
+  --bg-subtle: #f4f2ec; /* sunken / code blocks */
+  --surface: #ffffff; /* raised cards */
+  --border: #e7e3da; /* hairlines */
+  --border-strong: #d8d3c7;
 
-  @keyframes slide-in {
-    10% {
-      transform: translateY(-100%);
+  /* Ink */
+  --text: #22201c; /* primary reading ink (warm near-black) */
+  --text-muted: #6b665c; /* secondary / meta */
+  --text-faint: #928c80; /* captions, disabled */
+
+  /* Accent — a calm, un-neon editorial blue */
+  --accent: #2f5fd0;
+  --accent-hover: #244cad;
+  --accent-soft: #e9eefb; /* tinted background wash */
+
+  /* Feedback tints (callouts) */
+  --note: #2f5fd0;
+  --tip: #1f8a5b;
+  --warn: #b7791f;
+  --danger: #c0392b;
+
+  /* Selection */
+  --selection: #d7e0f7;
+
+  /* Elevation — subtle, warm-tinted */
+  --shadow-sm: 0 1px 2px rgba(34, 32, 28, 0.05);
+  --shadow-md: 0 4px 16px -4px rgba(34, 32, 28, 0.1);
+  --shadow-lg: 0 12px 32px -8px rgba(34, 32, 28, 0.14);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: #1a1917; /* warm charcoal, not black */
+  --bg-subtle: #211f1c;
+  --surface: #232120;
+  --border: #322f2b;
+  --border-strong: #423e38;
+
+  --text: #e9e5dd; /* warm off-white */
+  --text-muted: #a29c90;
+  --text-faint: #7c766b;
+
+  --accent: #8aa6f0;
+  --accent-hover: #a7bcf5;
+  --accent-soft: #232b40;
+
+  --note: #8aa6f0;
+  --tip: #5fce9b;
+  --warn: #e0b062;
+  --danger: #ec7a6d;
+
+  --selection: #29344f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+}
+
+/* ------------------------------------------------------------------ *
+ * TAILWIND THEME — maps tokens to utilities (bg-bg, text-muted, …)
+ * `inline` so the .dark overrides above take effect at runtime.
+ * ------------------------------------------------------------------ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+
+  /* Type families */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Newsreader Variable", ui-serif, Georgia, Cambria, "Times New Roman",
+    serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
+
+  /* Modular type scale (1.2 minor-third, tuned for reading) */
+  --text-xs: 0.79rem;
+  --text-sm: 0.889rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.266rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.898rem;
+  --text-4xl: 2.281rem;
+  --text-5xl: 2.887rem;
+  --text-6xl: 3.653rem;
+
+  /* Content measures */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
+  /* Radius — restrained */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* Motion — quiet, purposeful */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ------------------------------------------------------------------ *
+ * BASE
+ * ------------------------------------------------------------------ */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* clears sticky header on anchor jump */
+    font-feature-settings: "cv05" 1, "ss01" 1; /* Inter refinements */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background-color: var(--selection);
+  }
+
+  /* Guarantee closed dialogs stay hidden (some resets drop the UA rule) */
+  dialog:not([open]) {
+    display: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 640;
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
     }
-    100% {
-      transform: translateY(0);
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * PROSE — the article reading surface. Bespoke (not the typography
+ * plugin) so every element earns its rhythm. Body set in Newsreader.
+ * ------------------------------------------------------------------ */
+.prose {
+  --measure: 68ch;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.75;
+  color: var(--text);
+  font-optical-sizing: auto;
+}
+
+.prose > * {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* Full-bleed escape hatch for figures / code / tables */
+.prose > .full-bleed,
+.prose > figure.wide {
+  max-width: min(52rem, 100%);
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose figure,
+.prose pre,
+.prose table,
+.prose details {
+  margin-block: 1.15em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-sans);
+  color: var(--text);
+  scroll-margin-top: 5rem;
+}
+.prose h2 {
+  font-size: 1.6em;
+  margin-block: 2.2em 0.7em;
+  letter-spacing: -0.02em;
+}
+.prose h3 {
+  font-size: 1.28em;
+  margin-block: 1.9em 0.6em;
+}
+.prose h4 {
+  font-size: 1.08em;
+  margin-block: 1.6em 0.5em;
+  font-weight: 620;
+}
+
+/* Anchored headings — link icon revealed on hover */
+.prose :is(h2, h3, h4) .heading-anchor {
+  opacity: 0;
+  margin-left: 0.35em;
+  color: var(--text-faint);
+  font-weight: 400;
+  transition: opacity 0.15s var(--ease-out);
+}
+.prose :is(h2, h3, h4) .heading-anchor::before {
+  content: "#";
+}
+.prose :is(h2, h3, h4):hover .heading-anchor,
+.prose :is(h2, h3, h4) .heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose a:not(.heading-anchor) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  transition: text-decoration-color 0.15s var(--ease-out);
+}
+.prose a:not(.heading-anchor):hover {
+  text-decoration-color: var(--accent);
+}
+
+.prose strong {
+  font-weight: 680;
+  color: var(--text);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+.prose li {
+  margin-block: 0.4em;
+  padding-left: 0.2em;
+}
+.prose li::marker {
+  color: var(--text-faint);
+}
+.prose ul > li::marker {
+  content: "–  ";
+}
+
+.prose blockquote {
+  border-left: 2.5px solid var(--accent);
+  padding-left: 1.1em;
+  font-style: italic;
+  color: var(--text-muted);
+}
+.prose blockquote p:first-child {
+  margin-top: 0;
+}
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose hr {
+  border: 0;
+  margin-block: 3em;
+  text-align: center;
+}
+.prose hr::before {
+  content: "* * *";
+  color: var(--text-faint);
+  letter-spacing: 0.6em;
+}
+
+.prose img,
+.prose video {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.prose figure figcaption {
+  font-family: var(--font-sans);
+  font-size: 0.82em;
+  color: var(--text-faint);
+  text-align: center;
+  margin-top: 0.7em;
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  padding: 0.12em 0.38em;
+  border-radius: var(--radius-sm);
+  word-break: break-word;
+}
+
+/* Code blocks (Shiki dual-theme) */
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  line-height: 1.65;
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+.prose pre code {
+  font-family: inherit;
+  display: grid; /* one row per line — enables line highlighting later */
+}
+
+/* Shiki: use the light theme vars by default, dark vars under .dark */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+  text-decoration: var(--shiki-light-text-decoration);
+}
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+.astro-code span {
+  background-color: transparent !important;
+}
+
+/* Tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.92em;
+  display: block;
+  overflow-x: auto;
+}
+.prose thead th {
+  text-align: left;
+  font-weight: 620;
+  border-bottom: 2px solid var(--border-strong);
+  padding: 0.6em 0.9em;
+}
+.prose tbody td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.6em 0.9em;
+  vertical-align: top;
+}
+.prose tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+/* Footnotes */
+.prose .footnotes {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+.prose .footnotes h2 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+.prose [data-footnote-ref],
+.prose [id^="user-content-fnref"] {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.prose sup {
+  line-height: 0;
+}
+
+/* KaTeX display overflow on mobile */
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.4em;
+}
+
+/* First paragraph lede treatment */
+.prose > p:first-of-type {
+  font-size: 1.08em;
+  color: var(--text);
+}
+
+/* Code block wrapper + copy button (added by CodeBlock enhancement) */
+.code-wrapper {
+  position: relative;
+}
+.code-wrapper .copy-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  padding: 0.3em 0.55em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s var(--ease-out), color 0.15s var(--ease-out);
+}
+.code-wrapper:hover .copy-btn,
+.code-wrapper .copy-btn:focus-visible {
+  opacity: 1;
+}
+.code-wrapper .copy-btn[data-copied="true"] {
+  color: var(--tip);
+  opacity: 1;
+}
+
+/* Optional code block filename label (```js title="app.js") */
+.code-wrapper[data-filename]::before {
+  content: attr(data-filename);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  padding: 0 0.2rem 0.5rem;
+}
+
+/* Utility: visually-hidden but screen-reader available */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

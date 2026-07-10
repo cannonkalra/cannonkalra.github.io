@@ -1,0 +1,117 @@
+---
+title: "Building a Multi-Tenant Lakehouse on Iceberg"
+description: "How we unified real-time and batch pipelines into a single Apache Iceberg lakehouse serving billions of events a month — without the isolation nightmares."
+date: 2026-06-18
+featured: true
+tags: ["data-platforms", "iceberg", "architecture"]
+series: Data Platforms in Practice
+part: 1
+author: cannon
+---
+
+import Callout from "@/components/Callout.astro";
+import Mermaid from "@/components/Mermaid.astro";
+
+Every data platform eventually faces the same fork in the road: do you give each
+tenant their own warehouse, or do you build **one system** that serves everyone?
+We chose the second path, and Apache Iceberg made it tractable. This is how the
+pieces fit together.
+
+<Callout type="note" title="Context">
+  "Tenant" here means a product team, not an external customer. The isolation
+  requirements are softer, but the scale — 2B+ events per month — is not.
+</Callout>
+
+## The shape of the problem
+
+A lakehouse promises the economics of object storage with the semantics of a
+warehouse. The hard part isn't the storage; it's making **concurrent writers**,
+**schema evolution**, and **per-tenant isolation** coexist. Iceberg's hidden
+partitioning and snapshot isolation give us the first two almost for free.
+
+Here's the ingestion topology we settled on:
+
+<Mermaid
+  title="Ingestion topology: streaming and batch converge on one table format"
+  code={`flowchart LR
+  A[Kafka topics] -->|Flink| B[Iceberg staging]
+  C[Batch sources] -->|Spark| B
+  B --> D{Compaction}
+  D --> E[Iceberg gold tables]
+  E --> F[Athena / Trino]
+  E --> G[BI dashboards]`}
+/>
+
+## Isolation without duplication
+
+The naive approach — a database per tenant — multiplies operational cost by the
+number of teams. Instead we use a single catalog with tenant-scoped namespaces
+and enforce boundaries at query time.
+
+```python title="partition_spec.py"
+from pyiceberg.schema import Schema
+from pyiceberg.partitioning import PartitionSpec, PartitionField
+from pyiceberg.transforms import IdentityTransform, DayTransform
+
+# Tenant is the leading partition key: pruning happens before any scan.
+spec = PartitionSpec(
+    PartitionField(source_id=1, field_id=1000,
+                   transform=IdentityTransform(), name="tenant_id"),
+    PartitionField(source_id=2, field_id=1001,
+                   transform=DayTransform(), name="event_day"),
+)
+```
+
+Because `tenant_id` is the leading partition, a query filtered to one tenant
+never touches another's files. The planner prunes them before the scan even
+begins — isolation as a **side effect of physical layout**, not a bolted-on
+access layer.
+
+<Callout type="warning" title="The compaction tax">
+  Streaming writers produce thousands of tiny files. Without scheduled
+  compaction, query planning time grows linearly with file count and your
+  "fast" lakehouse slows to a crawl. Budget for it from day one.
+</Callout>
+
+### Cost model
+
+The economics are what sold leadership. A rough monthly comparison at our scale:
+
+| Approach              | Storage | Compute | Ops overhead |
+| --------------------- | ------: | ------: | ------------ |
+| Warehouse per tenant  |  $$$    |  $$$    | High         |
+| Shared lakehouse      |  $      |  $$     | Medium       |
+| Lakehouse + caching   |  $      |  $      | Medium       |
+
+The shared lakehouse cut storage cost by roughly **60%** because cold data lives
+on S3 rather than in warehouse-managed storage.[^storage]
+
+## A note on read amplification
+
+Snapshot isolation means readers see a consistent view even as writers commit.
+The trade-off is metadata growth. If $n$ is the number of commits and $f$ the
+average files per commit, planning cost scales with:
+
+$$
+C_{\text{plan}} \approx O(n \cdot f) \quad \text{without compaction}
+$$
+
+Compaction collapses many small snapshots into few large ones, bringing this
+back toward $O(\log n)$ in practice. That single operation is the difference
+between a lakehouse that ages gracefully and one that doesn't.
+
+## What I'd tell my past self
+
+1. Make `tenant_id` the leading partition **before** you have data. Repartitioning petabytes later is misery.
+2. Schedule compaction as a first-class job, not an afterthought.
+3. Treat the catalog as the source of truth — never let writers bypass it.
+
+> The best data platform is the one your teams forget is there. Reliability is
+> invisible; only its absence gets noticed.
+
+Next in this series, we'll dig into the streaming side: why we chose a
+Kappa-style architecture and where it bit us.
+
+[^storage]: Measured over a full quarter, net of the compute we added back for
+    compaction jobs. Your mileage will vary with query patterns and how cold
+    your cold data really is.

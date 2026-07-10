@@ -1,0 +1,75 @@
+---
+import Icon from "./Icon.astro";
+/** Page-number pagination for the blog index (Astro `paginate()` shape). */
+interface Props {
+  currentPage: number;
+  lastPage: number;
+  urlPrev?: string;
+  urlNext?: string;
+  base?: string;
+}
+const {
+  currentPage,
+  lastPage,
+  urlPrev,
+  urlNext,
+  base = "/blog",
+} = Astro.props;
+
+const pageHref = (n: number) => (n === 1 ? `${base}` : `${base}/page/${n}`);
+const pages = Array.from({ length: lastPage }, (_, i) => i + 1);
+---
+
+{
+  lastPage > 1 && (
+    <nav
+      class="mt-12 flex items-center justify-between border-t border-border pt-6 font-sans text-sm"
+      aria-label="Pagination"
+    >
+      <a
+        href={urlPrev}
+        class:list={[
+          "inline-flex items-center gap-1.5 rounded-md px-3 py-2 transition-colors",
+          urlPrev
+            ? "text-muted hover:bg-bg-subtle hover:text-text"
+            : "pointer-events-none text-faint",
+        ]}
+        aria-disabled={!urlPrev}
+      >
+        <Icon name="arrowLeft" size={15} /> Newer
+      </a>
+
+      <ul class="flex items-center gap-1">
+        {pages.map((n) => (
+          <li>
+            <a
+              href={pageHref(n)}
+              aria-current={n === currentPage ? "page" : undefined}
+              class:list={[
+                "grid size-8 place-items-center rounded-md tabular-nums transition-colors",
+                n === currentPage
+                  ? "bg-accent-soft text-accent"
+                  : "text-muted hover:bg-bg-subtle hover:text-text",
+              ]}
+            >
+              {n}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href={urlNext}
+        class:list={[
+          "inline-flex items-center gap-1.5 rounded-md px-3 py-2 transition-colors",
+          urlNext
+            ? "text-muted hover:bg-bg-subtle hover:text-text"
+            : "pointer-events-none text-faint",
+        ]}
+        aria-disabled={!urlNext}
+      >
+        Older <Icon name="arrowRight" size={15} />
+      </a>
+    </nav>
+  )
+}

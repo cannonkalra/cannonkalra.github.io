@@ -1,0 +1,63 @@
+---
+import { getEntry } from "astro:content";
+import Icon from "./Icon.astro";
+
+interface Props {
+  authorId: string;
+}
+const entry = await getEntry("authors", Astro.props.authorId);
+const a = entry?.data;
+
+type SocialLink = {
+  icon: "twitter" | "github" | "linkedin";
+  href: string;
+  label: string;
+};
+const links: SocialLink[] = a
+  ? [
+      a.social?.twitter && {
+        icon: "twitter" as const,
+        href: `https://twitter.com/${a.social.twitter}`,
+        label: "Twitter",
+      },
+      a.social?.github && {
+        icon: "github" as const,
+        href: `https://github.com/${a.social.github}`,
+        label: "GitHub",
+      },
+      a.social?.linkedin && {
+        icon: "linkedin" as const,
+        href: `https://linkedin.com/in/${a.social.linkedin}`,
+        label: "LinkedIn",
+      },
+    ].filter((x): x is SocialLink => Boolean(x))
+  : [];
+---
+
+{
+  a && (
+    <div class="mt-12 flex flex-col gap-4 rounded-xl border border-border bg-bg-subtle p-6 sm:flex-row sm:items-center">
+      <div class="grid size-14 shrink-0 place-items-center rounded-full bg-accent-soft font-serif text-xl font-semibold text-accent">
+        {a.name.charAt(0)}
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-text">{a.name}</p>
+        {a.title && <p class="text-sm text-muted">{a.title}</p>}
+        <p class="mt-1.5 text-sm text-muted">{a.bio}</p>
+      </div>
+      <div class="flex gap-1">
+        {links.map((l) => (
+          <a
+            href={l.href}
+            target="_blank"
+            rel="noopener"
+            aria-label={l.label}
+            class="grid size-8 place-items-center rounded-md text-muted transition-colors hover:bg-surface hover:text-text"
+          >
+            <Icon name={l.icon} size={16} />
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}

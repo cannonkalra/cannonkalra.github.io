@@ -1,0 +1,80 @@
+---
+import type { MarkdownHeading } from "@/types";
+import { buildToc } from "@/lib/toc";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const toc = buildToc(Astro.props.headings);
+---
+
+{
+  toc.length > 0 && (
+    <nav class="toc text-sm" aria-label="Table of contents">
+      <p class="mb-3 font-sans text-xs font-semibold uppercase tracking-wider text-faint">
+        On this page
+      </p>
+      <ul class="space-y-1">
+        {toc.map((item) => (
+          <li>
+            <a
+              href={`#${item.slug}`}
+              data-toc-link={item.slug}
+              class="block border-l-2 border-transparent py-0.5 pl-3 text-muted transition-colors hover:text-text"
+            >
+              {item.text}
+            </a>
+            {item.children.length > 0 && (
+              <ul class="space-y-1">
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={`#${child.slug}`}
+                      data-toc-link={child.slug}
+                      class="block border-l-2 border-transparent py-0.5 pl-6 text-muted transition-colors hover:text-text"
+                    >
+                      {child.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc a[data-active="true"] {
+    color: var(--text);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  // Scroll-spy: highlight the TOC link for the section currently in view.
+  const links = new Map<string, HTMLElement>();
+  document
+    .querySelectorAll<HTMLElement>("[data-toc-link]")
+    .forEach((el) => links.set(el.dataset.tocLink!, el));
+
+  if (links.size) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach((el) => el.removeAttribute("data-active"));
+            links.get(entry.target.id)?.setAttribute("data-active", "true");
+          }
+        }
+      },
+      { rootMargin: "0px 0px -75% 0px", threshold: 0 },
+    );
+    document
+      .querySelectorAll("article :is(h2, h3)[id]")
+      .forEach((h) => observer.observe(h));
+  }
+</script>

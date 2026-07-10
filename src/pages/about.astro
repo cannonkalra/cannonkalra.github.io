@@ -1,0 +1,65 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Icon from "@/components/Icon.astro";
+import { EXPERIENCE, SOCIAL_LINKS } from "@/config";
+---
+
+<BaseLayout
+  title="About"
+  description="Cannon Kalra — platform engineer building large-scale data systems."
+>
+  <article class="prose prose-about pt-14">
+    <h1 class="font-sans">About</h1>
+    <p>
+      I'm Cannon — a platform engineer with 9+ years building large-scale,
+      production-grade data systems across startups and high-growth teams. I
+      design reliable, cost-efficient data platforms that power analytics,
+      experimentation, and real-time decision-making.
+    </p>
+    <p>
+      I've led multi-tenant lakehouse and streaming architectures processing
+      billions of events, modernized legacy batch frameworks for 10× performance
+      gains, and set data-quality and observability standards across
+      organizations. This site is where I write it all down — the systems, the
+      trade-offs, and the reasoning behind them.
+    </p>
+
+    <h2 class="font-sans">Experience</h2>
+  </article>
+
+  <!-- Experience is structured data, rendered outside prose -->
+  <ol class="mx-auto mt-2 max-w-[68ch] divide-y divide-border">
+    {
+      EXPERIENCE.map((job) => (
+        <li class="flex items-baseline justify-between gap-4 py-3">
+          <div>
+            <p class="font-medium text-text">{job.position}</p>
+            <p class="text-sm text-muted">{job.company}</p>
+          </div>
+          <p class="shrink-0 font-mono text-xs text-faint tabular-nums">
+            {job.period}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="mx-auto mt-10 max-w-[68ch]">
+    <h2 class="font-sans text-xl font-semibold text-text">Elsewhere</h2>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        SOCIAL_LINKS.map((s) => (
+          <a
+            href={s.href}
+            target={s.href.startsWith("http") ? "_blank" : undefined}
+            rel={s.href.startsWith("http") ? "me noopener" : undefined}
+            class="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 font-sans text-sm text-muted transition-colors hover:border-border-strong hover:text-text"
+          >
+            <Icon name={s.icon as any} size={16} />
+            {s.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

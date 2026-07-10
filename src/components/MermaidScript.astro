@@ -1,0 +1,47 @@
+---
+/**
+ * The single Mermaid client island, included once per article. It upgrades any
+ * `[data-mermaid]` placeholder — whether produced by a ```mermaid fence
+ * (remark-mermaid) or the <Mermaid> MDX component — into an SVG diagram.
+ *
+ * Mermaid (~500 kB) is imported lazily and ONLY when a diagram is present, so
+ * articles without one pay nothing but this tiny detector script. Diagrams
+ * re-render on theme change to stay legible in both light and dark mode.
+ */
+---
+<script>
+  const nodes = document.querySelectorAll<HTMLElement>("article [data-mermaid]");
+  if (nodes.length) {
+    let done = false;
+    const render = async () => {
+      const mermaid = (await import("mermaid")).default;
+      const dark = document.documentElement.classList.contains("dark");
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: dark ? "dark" : "neutral",
+        fontFamily: "inherit",
+        securityLevel: "strict",
+      });
+      let i = 0;
+      for (const node of nodes) {
+        const code = node.dataset.mermaid ?? "";
+        try {
+          const { svg } = await mermaid.render(`mmd-${i++}`, code);
+          node.innerHTML = svg;
+        } catch {
+          node.innerHTML =
+            '<span class="font-sans text-sm text-faint">Diagram failed to render.</span>';
+        }
+      }
+      done = true;
+    };
+    render();
+    // Re-render on light/dark toggle so diagram colors track the theme.
+    new MutationObserver(() => {
+      if (done) render();
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+</script>

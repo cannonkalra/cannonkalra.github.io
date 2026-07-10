@@ -1,0 +1,175 @@
+---
+import type { MarkdownHeading } from "@/types";
+import type { Post } from "@/lib/posts";
+import {
+  readingTime,
+  getAdjacentPosts,
+  getRelatedPosts,
+  getSeriesByName,
+} from "@/lib/posts";
+import { Image } from "astro:assets";
+
+import BaseLayout from "./BaseLayout.astro";
+import PostMeta from "@/components/PostMeta.astro";
+import Tag from "@/components/Tag.astro";
+import ShareLinks from "@/components/ShareLinks.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import ReadingProgress from "@/components/ReadingProgress.astro";
+import SeriesNav from "@/components/SeriesNav.astro";
+import AuthorCard from "@/components/AuthorCard.astro";
+import PrevNext from "@/components/PrevNext.astro";
+import PostCard from "@/components/PostCard.astro";
+import CodeCopyButton from "@/components/CodeCopyButton.astro";
+import MermaidScript from "@/components/MermaidScript.astro";
+import Icon from "@/components/Icon.astro";
+
+interface Props {
+  post: Post;
+  headings: MarkdownHeading[];
+}
+const { post, headings } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, cover, coverAlt, series } =
+  post.data;
+
+const minutes = readingTime(post);
+const { prev, next } = await getAdjacentPosts(post);
+const related = await getRelatedPosts(post);
+const seriesData = series ? await getSeriesByName(series.name) : undefined;
+const path = `/blog/${post.id}/`;
+---
+
+<BaseLayout
+  wide
+  title={title}
+  description={description}
+  image={`/og/${post.id}.png`}
+  article
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  tags={tags}
+>
+  <ReadingProgress />
+
+  <div class="grid gap-x-12 py-10 lg:grid-cols-[minmax(0,1fr)_14rem]">
+    <div class="min-w-0" data-pagefind-body>
+      <!-- Article header -->
+      <header class="mx-auto max-w-[68ch]">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-1.5 font-sans text-sm text-muted transition-colors hover:text-text"
+        >
+          <Icon name="arrowLeft" size={15} /> All writing
+        </a>
+
+        {
+          series && (
+            <p class="mt-6 font-sans text-sm font-medium text-accent">
+              {series.name} · Part {series.order}
+            </p>
+          )
+        }
+
+        <h1
+          class="mt-3 text-4xl font-bold tracking-tight text-text sm:text-5xl"
+        >
+          {title}
+        </h1>
+        <p class="mt-4 text-lg text-muted">{description}</p>
+
+        <div
+          class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4"
+        >
+          <PostMeta date={pubDate} updated={updatedDate} minutes={minutes} />
+          <ShareLinks title={title} path={path} />
+        </div>
+      </header>
+
+      {
+        cover && (
+          <figure class="mx-auto mt-8 max-w-3xl">
+            <Image
+              src={cover}
+              alt={coverAlt ?? ""}
+              widths={[480, 800, 1200]}
+              sizes="(max-width: 768px) 100vw, 768px"
+              class="w-full rounded-xl border border-border"
+              loading="eager"
+            />
+          </figure>
+        )
+      }
+
+      <!-- Mobile TOC (collapsible) -->
+      {
+        headings.length > 2 && (
+          <details class="mx-auto mt-8 max-w-[68ch] rounded-lg border border-border bg-bg-subtle p-4 lg:hidden">
+            <summary class="cursor-pointer font-sans text-sm font-semibold text-text">
+              Table of contents
+            </summary>
+            <div class="mt-3">
+              <TableOfContents headings={headings} />
+            </div>
+          </details>
+        )
+      }
+
+      <!-- Article body -->
+      <article class="prose mt-10">
+        <slot />
+      </article>
+
+      <div class="mx-auto max-w-[68ch]" data-pagefind-ignore>
+        {
+          seriesData && series && (
+            <SeriesNav
+              seriesName={series.name}
+              posts={seriesData.posts}
+              currentId={post.id}
+            />
+          )
+        }
+
+        <div
+          class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6"
+        >
+          <div class="flex flex-wrap gap-2">
+            {tags.map((t) => <Tag tag={t} />)}
+          </div>
+          <ShareLinks title={title} path={path} />
+        </div>
+
+        <AuthorCard authorId={post.data.author} />
+        <PrevNext prev={prev} next={next} />
+
+        {
+          related.length > 0 && (
+            <section class="mt-14">
+              <h2 class="font-sans text-lg font-semibold text-text">
+                Related reading
+              </h2>
+              <div class="mt-2">
+                {related.map((p) => (
+                  <PostCard post={p} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Desktop sticky TOC rail -->
+    {
+      headings.length > 2 && (
+        <aside class="hidden lg:block">
+          <div class="sticky top-24 max-h-[calc(100dvh-8rem)] overflow-y-auto pb-8">
+            <TableOfContents headings={headings} />
+          </div>
+        </aside>
+      )
+    }
+  </div>
+
+  <CodeCopyButton />
+  <MermaidScript />
+</BaseLayout>
