@@ -1,9 +1,12 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostCard from "@/components/PostCard.astro";
 import Icon from "@/components/Icon.astro";
 import { SOCIAL_LINKS } from "@/config";
 import { getPosts, getFeaturedPosts } from "@/lib/posts";
+import { PROJECTS } from "@/lib/projects";
+import portrait from "@/assets/cannon-portrait.webp";
 
 const featured = await getFeaturedPosts();
 const recent = await getPosts();
@@ -14,66 +17,167 @@ const rest = (featured.length ? featured.slice(1) : recent.slice(1, 5)).slice(
 );
 ---
 
-<BaseLayout>
-  <!-- Intro — quiet, typographic, no hero imagery -->
-  <section class="pt-16 sm:pt-24">
-    <h1 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">
-      Cannon Kalra
-    </h1>
-    <p class="mt-4 text-lg leading-relaxed text-muted">
-      I'm a platform engineer who builds large-scale data systems — lakehouses,
-      streaming pipelines, and the infrastructure that keeps them reliable. This
-      is where I write about the craft: distributed systems, data platforms, and
-      the decisions behind them.
-    </p>
-    <div class="mt-6 flex flex-wrap items-center gap-1">
-      {
-        SOCIAL_LINKS.map((s) => (
-          <a
-            href={s.href}
-            aria-label={s.label}
-            rel={s.href.startsWith("http") ? "me noopener" : undefined}
-            target={s.href.startsWith("http") ? "_blank" : undefined}
-            class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
-          >
-            <Icon name={s.icon as any} size={19} />
-          </a>
-        ))
-      }
+<BaseLayout wide>
+  <!-- Hero — name, a summary in place of a bio, and a photo -->
+  <section
+    class="grid items-center gap-10 pt-14 sm:pt-20 md:grid-cols-[1fr_auto] md:gap-16"
+  >
+    <div>
+      <p class="font-mono text-sm font-medium tracking-tight text-accent">
+        Data Platform Engineer
+      </p>
+      <h1 class="mt-2 text-4xl font-bold tracking-tight text-text sm:text-5xl">
+        Cannon Kalra
+      </h1>
+      <p class="mt-4 max-w-[62ch] leading-relaxed text-muted">
+        I've always been drawn to the space where hardware meets software, where
+        bits turn into signals and signals turn into decisions. That curiosity
+        eventually led me to distributed systems and data platforms, starting
+        with tools like Spark, iceberg, Kafka, Doris, Trino, Flink, Airflow, and
+        more.
+      </p>
+      <p class="mt-4 max-w-[62ch] leading-relaxed text-muted">
+        Before data platforms became my focus, I was tinkering with
+        microcontrollers and single-board computers, building small IoT networks
+        over MQTT. Working with constrained devices and unreliable networks
+        taught me how systems behave outside the assumptions of a datasheet. I
+        also got into USB protocols and HID devices. There's something
+        satisfying about writing code that talks directly to silicon.
+      </p>
+      <p class="mt-4 max-w-[62ch] leading-relaxed text-muted">
+        That interest eventually grew into DevOps and Data Engineering. I've
+        worked on databases, moved data reliably between systems, and built
+        pipelines that scale and remain fault-tolerant across both batch and
+        real-time workloads. Along the way, that has meant cutting cloud costs
+        by up to half and scaling pipelines to billions of events a month.
+      </p>
+      <p class="mt-4 max-w-[62ch] leading-relaxed text-muted">
+        I'm still happiest close to the metal, whether that's firmware,
+        protocols, or the parts of a system that most people never see.
+      </p>
+
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 font-sans text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+        >
+          Read the writing <Icon name="arrowRight" size={15} />
+        </a>
+        <div class="flex flex-wrap items-center gap-1">
+          {
+            SOCIAL_LINKS.map((s) => (
+              <a
+                href={s.href}
+                aria-label={s.label}
+                rel={s.href.startsWith("http") ? "me noopener" : undefined}
+                target={s.href.startsWith("http") ? "_blank" : undefined}
+                class="grid size-9 place-items-center rounded-md text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+              >
+                <Icon name={s.icon as any} size={19} />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="relative mx-auto size-56 shrink-0 rotate-3 sm:size-72 md:mx-0 md:size-80"
+    >
+      <!-- Soft accent glow behind the frame -->
+      <div
+        class="absolute inset-0 -z-10 scale-90 rounded-[2rem] bg-accent/20 blur-2xl"
+      >
+      </div>
+
+      <span
+        class="pointer-events-none absolute -left-2.5 -top-2.5 size-8 rounded-tl-lg border-l-2 border-t-2 border-accent"
+      ></span>
+      <span
+        class="pointer-events-none absolute -right-2.5 -top-2.5 size-8 rounded-tr-lg border-r-2 border-t-2 border-accent"
+      ></span>
+      <span
+        class="pointer-events-none absolute -bottom-2.5 -left-2.5 size-8 rounded-bl-lg border-b-2 border-l-2 border-accent"
+      ></span>
+      <span
+        class="pointer-events-none absolute -bottom-2.5 -right-2.5 size-8 rounded-br-lg border-b-2 border-r-2 border-accent"
+      ></span>
+      <Image
+        src={portrait}
+        alt="Cannon Kalra"
+        width={512}
+        height={512}
+        class="size-full rounded-2xl border border-border object-cover shadow-lg"
+        loading="eager"
+      />
     </div>
   </section>
 
-  <!-- Writing -->
-  {
-    lead && (
-      <section class="mt-16 sm:mt-20">
-        <div class="flex items-baseline justify-between">
-          <h2 class="font-sans text-sm font-semibold uppercase tracking-wider text-faint">
-            {featured.length ? "Featured writing" : "Latest writing"}
-          </h2>
-          <a
-            href="/blog"
-            class="inline-flex items-center gap-1 font-sans text-sm text-muted transition-colors hover:text-text"
-          >
-            All posts <Icon name="arrowRight" size={14} />
-          </a>
-        </div>
+  <!-- Writing + Projects, side by side — uses the wide shell instead of
+       re-narrowing into an island with empty space beside it. -->
+  <div
+    class="mt-16 grid gap-x-12 gap-y-14 sm:mt-20 lg:grid-cols-[minmax(0,1fr)_18rem]"
+  >
+    <div class="min-w-0">
+      {
+        lead && (
+          <section>
+            <div class="flex items-baseline justify-between">
+              <h2 class="font-sans text-sm font-semibold uppercase tracking-wider text-faint">
+                {featured.length ? "Featured writing" : "Latest writing"}
+              </h2>
+              <a
+                href="/blog"
+                class="inline-flex items-center gap-1 font-sans text-sm text-muted transition-colors hover:text-text"
+              >
+                All posts <Icon name="arrowRight" size={14} />
+              </a>
+            </div>
 
-        <div class="mt-4">
-          <PostCard post={lead} featured />
-          {rest.map((p) => (
-            <PostCard post={p} />
-          ))}
-        </div>
-      </section>
-    )
-  }
+            <div class="mt-4 max-w-2xl">
+              <PostCard post={lead} featured />
+              {rest.map((p) => (
+                <PostCard post={p} />
+              ))}
+            </div>
+          </section>
+        )
+      }
 
-  {
-    !lead && (
-      <p class="mt-16 text-muted">
-        No posts yet — the first essay is on its way.
-      </p>
-    )
-  }
+      {
+        !lead && (
+          <p class="text-muted">
+            No posts yet — the first essay is on its way.
+          </p>
+        )
+      }
+    </div>
+
+    <aside>
+      <div class="flex items-baseline justify-between">
+        <h2
+          class="font-sans text-sm font-semibold uppercase tracking-wider text-faint"
+        >
+          Selected projects
+        </h2>
+        <a
+          href="/projects"
+          class="inline-flex items-center gap-1 font-sans text-sm text-muted transition-colors hover:text-text"
+        >
+          All <Icon name="arrowRight" size={14} />
+        </a>
+      </div>
+
+      <ul class="mt-4 divide-y divide-border">
+        {
+          PROJECTS.map((p) => (
+            <li class="py-4 first:pt-0">
+              <p class="font-medium text-text">{p.name}</p>
+              <p class="mt-1.5 text-sm text-muted">{p.summary}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </div>
 </BaseLayout>

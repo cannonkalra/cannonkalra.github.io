@@ -1,11 +1,8 @@
 import { OGImageRoute } from "astro-og-canvas";
-import { getCollection } from "astro:content";
 import { SITE } from "@/config";
+import { getPosts } from "@/lib/posts";
 
-const posts = await getCollection(
-  "blog",
-  ({ data }) => import.meta.env.DEV || !data.draft,
-);
+const posts = await getPosts();
 
 // One card per post + a site-wide default (referenced by non-article pages).
 const pages: Record<string, { title: string; description: string }> = {
@@ -28,7 +25,7 @@ export const { getStaticPaths, GET } = await OGImageRoute({
       [26, 25, 23],
       [35, 33, 32],
     ],
-    border: { color: [138, 166, 240], width: 12, side: "inline-start" },
+    border: { color: [79, 216, 196], width: 12, side: "inline-start" },
     padding: 72,
     font: {
       title: {

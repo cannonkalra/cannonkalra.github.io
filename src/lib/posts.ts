@@ -8,11 +8,15 @@ export type Post = CollectionEntry<"blog">;
 /** In production, drafts are hidden; in dev they remain visible. */
 const includeDrafts = import.meta.env.DEV;
 
+/** Posts filed under `src/content/blog/drafts/` are drafts, `draft:` frontmatter or not. */
+const isDraft = (post: Post) =>
+  Boolean(post.data.draft) || /(^|\/)drafts\//.test(post.filePath ?? "");
+
 /** All publishable posts, newest first. */
 export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection(
     "blog",
-    ({ data }) => includeDrafts || !data.draft,
+    (post) => includeDrafts || !isDraft(post),
   );
   return posts.sort(
     (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),

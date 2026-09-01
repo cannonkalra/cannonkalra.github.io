@@ -3,7 +3,7 @@ title: "High-Volume Writes: The Write-Ahead Log and Bloom Filters"
 description: "Why the LSM write path sustains high throughput — sequential appends only — and how Bloom filters stop lookups for keys that don't exist."
 date: 2026-07-10
 tags: [data-structures, storage, lsm-tree, write-ahead-log, bloom-filters, key-value-stores]
-draft: false
+draft: true
 series: why-every-data-structure-exists
 part: 4
 ---

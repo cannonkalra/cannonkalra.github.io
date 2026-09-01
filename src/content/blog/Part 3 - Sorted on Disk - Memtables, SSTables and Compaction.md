@@ -3,7 +3,7 @@ title: "Sorted on Disk: Memtables, SSTables, and Compaction"
 description: "Why balanced trees fail on disk, and how flushing sorted runs and merging them — the second half of merge sort — keeps data sorted in storage."
 date: 2026-07-08
 tags: [data-structures, storage, lsm-tree, sstable, compaction, merge-sort, key-value-stores]
-draft: false
+draft: true
 series: why-every-data-structure-exists
 part: 3
 ---

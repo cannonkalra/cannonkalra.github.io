@@ -12,8 +12,9 @@ Conventions used below:
 - `═` / `─` mark strong and hairline horizontal rules.
 - `│` marks column edges; `···` marks a sticky/pinned element.
 - Content column is centered on the page. Standard pages cap at **~42rem**
-  (`max-w-2xl`); article prose measures **~68ch**; article pages widen to
-  **~max-w-5xl** to fit a right-hand TOC rail.
+  (`max-w-2xl`); article prose measures **~68ch**; article pages and the home
+  hero widen to **~max-w-5xl** (the home page re-narrows its writing list back
+  to `max-w-2xl`).
 
 ---
 
@@ -75,53 +76,57 @@ columns vertically.
 
 ## 1. Home (`/`)
 
-A quiet, imagery-free landing. No hero banner.
+A wide, to-the-point landing: a two-column hero (name, a short personal
+summary in place of a resume-style bio, against a framed portrait), then
+Writing and Projects side by side. Every section shares the hero's left
+edge — nothing re-centers into a narrower island partway down the page.
 
 ### Desktop
 
 ```
-┌───────────────── max-w-2xl, centered ──────────────────┐
-│                                                         │
-│   Cannon Kalra                                          │  H1
-│                                                         │
-│   I write about data platforms and distributed          │  intro ¶
-│   systems — how they're built, scaled, and reasoned      │
-│   about.                                                 │
-│                                                         │
-│   [GH]  [TW]  [in]  [RSS]                                │  social row
-│                                                         │
-│   ─────────────────────────────────────────────────     │
-│                                                         │
-│   Featured writing                          All posts → │  section head
-│                                                         │
-│   ┌─────────────────────────────────────────────────┐   │
-│   │  ● Series · Part 2                               │   │  LEAD PostCard
-│   │  Building a query planner from scratch           │   │  (larger)
-│   │  A tour of cost-based optimization and the...    │   │
-│   │  2026-06-14 · 12 min                             │   │
-│   └─────────────────────────────────────────────────┘   │
-│                                                         │
-│   ┌───────────────────┐   ┌───────────────────┐         │
-│   │ Post title        │   │ Post title        │         │  up to 4 more
-│   │ short desc…       │   │ short desc…       │         │  (smaller cards)
-│   │ date · N min      │   │ date · N min      │         │
-│   └───────────────────┘   └───────────────────┘         │
-│   ┌───────────────────┐   ┌───────────────────┐         │
-│   │ Post title        │   │ Post title        │         │
-│   │ date · N min      │   │ date · N min      │         │
-│   └───────────────────┘   └───────────────────┘         │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌────────────────────── max-w-5xl, centered ───────────────────────┐
+│                                                                    │
+│   Platform engineer                              ┌┄┄┄┄┄┄┄┄┄┄┄┐    │
+│   Cannon Kalra                                    ┆  portrait  ┆  hero,
+│   I've always been drawn to the space where       ┆  (corner-  ┆  two cols
+│   hardware meets software — …                     ┆  bracketed)┆
+│   Before data platforms became the focus,         └┄┄┄┄┄┄┄┄┄┄┄┘    │
+│   I was tinkering with Raspberry Pis — …                           │
+│                                                                    │
+│   [Read the writing →]  [GH] [TW] [in] [RSS]                       │
+│                                                                    │
+│   Featured writing            All posts →   │  Selected projects  All →│  two columns,
+│   ┌─────────────────────────────────────┐   │  Project name        │   same left edge
+│   │  ● Series · Part 2                   │   │  one-line summary    │   as the hero
+│   │  Building a query planner from...    │   │  ───────────────    │
+│   │  2026-06-14 · 12 min                 │   │  Project name        │
+│   └─────────────────────────────────────┘   │  one-line summary    │
+│   Post title / short desc… / date            │  ───────────────    │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
-- Opens with the name as an H1, a one-to-two sentence description of what Cannon
-  writes about, and a compact row of social icons.
+- Opens with an eyebrow ("Platform engineer"), the name as an H1, and a
+  two-paragraph personal summary (how the hardware/software curiosity
+  turned into a data-platforms career) in place of a resume-style bio —
+  set against a framed portrait photo (rounded corners, accent-colored
+  viewfinder brackets) that anchors the top-right of the hero on wider
+  screens. Below that: a primary **"Read the writing →"** button and the
+  social icon row.
+- The page uses the **wide** (`max-w-5xl`) shell throughout. Rather than
+  re-centering into a `max-w-2xl` island partway down (which visibly
+  shifts the left margin), the writing list and a **"Selected projects"**
+  list run side by side in a `[1fr_18rem]` grid, both flush with the
+  hero's left edge — the writing column caps its own measure internally.
 - A **"Featured writing"** (or "Latest writing") section leads with one larger
   **PostCard** followed by up to four smaller cards, and an **"All posts →"**
-  link aligned to the section heading.
+  link aligned to the section heading. **"Selected projects"** is a dense
+  name + one-line-summary list (source: `src/lib/projects.ts`, shared with
+  `/projects`) with an **"All →"** link.
 
-**Mobile:** everything stacks into one column; the four secondary cards become a
-single-column list under the lead card.
+**Mobile:** the hero stacks — eyebrow, name, summary paragraphs, CTA/social
+row, then the portrait centered below — followed by the writing list, then
+the projects list, all single-column.
 
 ---
 

@@ -120,8 +120,8 @@ Color is expressed through **semantic tokens** (`--bg`, `--text`, `--accent`, �
 | `--text` | `#22201c` | Primary reading ink (warm near-black) |
 | `--text-muted` | `#6b665c` | Secondary text, meta |
 | `--text-faint` | `#928c80` | Captions, disabled |
-| `--accent` | `#2f5fd0` | Calm, un-neon editorial blue |
-| `--accent-soft` | `#e9eefb` | Tinted background wash |
+| `--accent` | `#0d7a6f` | Deep, un-neon editorial teal |
+| `--accent-soft` | `#e3f2ef` | Tinted background wash |
 
 ### Dark theme
 
@@ -133,14 +133,14 @@ Color is expressed through **semantic tokens** (`--bg`, `--text`, `--accent`, �
 | `--border` | `#322f2b` | Hairlines |
 | `--text` | `#e9e5dd` | Warm off-white ink |
 | `--text-muted` | `#a29c90` | Secondary text, meta |
-| `--accent` | `#8aa6f0` | Lightened blue for dark surfaces |
+| `--accent` | `#4fd8c4` | Lightened teal for dark surfaces |
 
 ### Reasoning
 
 - **Warmth.** Every neutral carries a faint warm cast (yellow/red, not blue). This is what makes the page feel editorial and premium rather than sterile. Ink and paper, not glass and metal.
 - **Contrast.** Primary text on background clears **WCAG AA** in both themes, and muted/faint tokens are calibrated to remain legible while reading as clearly secondary. Contrast is *sufficient*, never *maximal* — pure black on pure white is avoided precisely because it overshoots comfortable reading contrast.
 - **Why not pure black in dark mode.** A `#000000` background against light text causes halation (the text appears to bloom and vibrate) and removes any sense of depth. `#1a1917` — a warm charcoal — keeps text crisp, allows subtle elevation between `--bg`, `--bg-subtle`, and `--surface`, and is far kinder to the eye in low light.
-- **The accent** is a single restrained editorial blue. In light mode it is deep enough to pass AA on the page background for links; in dark mode it lightens to `#8aa6f0` so it stays legible against charcoal without glowing. There are no gradients and no second accent — one color, used consistently.
+- **The accent** is a single restrained editorial teal. In light mode it is deep enough to pass AA on the page background for links; in dark mode it lightens to `#4fd8c4` so it stays legible against charcoal without glowing. There are no gradients and no second accent — one color, used consistently.
 
 ### Theme persistence and no-flash
 

@@ -69,19 +69,19 @@ access layer.
 
 <Callout type="warning" title="The compaction tax">
   Streaming writers produce thousands of tiny files. Without scheduled
-  compaction, query planning time grows linearly with file count and your
-  "fast" lakehouse slows to a crawl. Budget for it from day one.
+  compaction, query planning time grows linearly with file count and your "fast"
+  lakehouse slows to a crawl. Budget for it from day one.
 </Callout>
 
 ### Cost model
 
 The economics are what sold leadership. A rough monthly comparison at our scale:
 
-| Approach              | Storage | Compute | Ops overhead |
-| --------------------- | ------: | ------: | ------------ |
-| Warehouse per tenant  |  $$$    |  $$$    | High         |
-| Shared lakehouse      |  $      |  $$     | Medium       |
-| Lakehouse + caching   |  $      |  $      | Medium       |
+| Approach             | Storage | Compute | Ops overhead |
+| -------------------- | ------: | ------: | ------------ |
+| Warehouse per tenant |     $$$ |     $$$ | High         |
+| Shared lakehouse     |       $ |      $$ | Medium       |
+| Lakehouse + caching  |       $ |       $ | Medium       |
 
 The shared lakehouse cut storage cost by roughly **60%** because cold data lives
 on S3 rather than in warehouse-managed storage.[^storage]
@@ -112,6 +112,7 @@ between a lakehouse that ages gracefully and one that doesn't.
 Next in this series, we'll dig into the streaming side: why we chose a
 Kappa-style architecture and where it bit us.
 
-[^storage]: Measured over a full quarter, net of the compute we added back for
+[^storage]:
+    Measured over a full quarter, net of the compute we added back for
     compaction jobs. Your mileage will vary with query patterns and how cold
     your cold data really is.
