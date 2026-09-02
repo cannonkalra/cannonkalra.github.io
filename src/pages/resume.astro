@@ -1,0 +1,49 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Icon from "@/components/Icon.astro";
+---
+
+<BaseLayout
+  wide
+  title="Resume"
+  description="Cannon Kalra's resume — download the PDF or view it inline."
+>
+  <div class="flex items-center justify-between gap-4 pt-14">
+    <h1 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">
+      Resume
+    </h1>
+    <a
+      href="/resume.pdf"
+      download
+      class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 font-sans text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+    >
+      <Icon name="download" size={16} />
+      Download PDF
+    </a>
+  </div>
+
+  <div
+    class="mt-6 h-[85vh] min-h-[600px] overflow-hidden rounded-xl border border-border bg-surface"
+  >
+    <object
+      data="/resume.pdf#zoom=100"
+      type="application/pdf"
+      class="size-full"
+      aria-label="Cannon Kalra's resume"
+    >
+      <div class="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
+        <p class="text-muted">
+          Your browser can't display the PDF inline.
+        </p>
+        <a
+          href="/resume.pdf"
+          download
+          class="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 font-sans text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+        >
+          <Icon name="download" size={16} />
+          Download PDF
+        </a>
+      </div>
+    </object>
+  </div>
+</BaseLayout>

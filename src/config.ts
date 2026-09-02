@@ -23,16 +23,22 @@ export const SITE = {
   goatcounterCode: "cannon",
 } as const;
 
-export const NAV_LINKS: { label: string; href: string }[] = [
-  { label: "Writing", href: "/blog" },
-  { label: "Series", href: "/series" },
-  { label: "Projects", href: "/projects" },
-  { label: "About", href: "/about" },
-];
+export const NAV_LINKS: { label: string; href: string; external?: boolean }[] =
+  [
+    { label: "Writing", href: "/blog" },
+    { label: "Series", href: "/series" },
+    { label: "Projects", href: "/projects" },
+    { label: "About", href: "/about" },
+    { label: "Resume", href: "/resume" },
+  ];
 
 export const SOCIAL_LINKS: { label: string; href: string; icon: string }[] = [
   { label: "GitHub", href: "https://github.com/cannonkalra", icon: "github" },
-  { label: "Twitter", href: "https://twitter.com/cannonkalra", icon: "twitter" },
+  {
+    label: "Twitter",
+    href: "https://twitter.com/cannonkalra",
+    icon: "twitter",
+  },
   {
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/cannonkalra",
@@ -47,13 +53,21 @@ export const EXPERIENCE: {
   position: string;
   period: string;
 }[] = [
-  { company: "Teleparty", position: "Lead Data Engineer", period: "2024 — Now" },
   {
     company: "Consulting / Advisory",
     position: "Cloud Solutions Architect",
-    period: "2023 — Now",
+    period: "2023 – Now",
+  },
+  {
+    company: "Teleparty",
+    position: "Data Platform Engineer",
+    period: "2024 – 2026",
   },
   { company: "Solulever", position: "Platform Lead", period: "2020 — 2023" },
   { company: "Elucidata", position: "Technical Lead", period: "2022 — 2023" },
-  { company: "FutureSoft", position: "Software Engineer", period: "2019 — 2020" },
+  {
+    company: "FutureSoft",
+    position: "Software Engineer",
+    period: "2019 — 2020",
+  },
 ];
